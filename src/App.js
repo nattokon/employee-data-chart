@@ -1,23 +1,31 @@
-import logo from './logo.svg';
+import { useEffect, useState } from 'react';
 import './App.css';
+import BarChart from './Chart';
+import { retrieveData } from './bridge';
+import { registerables } from 'chart.js';
+import { Chart } from "chart.js";
+import { Data } from "./Data";
 
 function App() {
+
+  const [employeesData, setEmployeesData] = useState([]);
+
+  Chart.register(...registerables);
+
+  useEffect(()=>{
+    retrieveData().then( data => {
+      setEmployeesData(data.data);
+      console.log("Employee data is set.");
+    }).catch(error => {
+      console.log("Error : ", error.message);
+      //if the API call fails, uncomment code below to use manual data copied from the API
+      // setEmployeesData(Data.data);
+    });
+  },[]);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <BarChart data={employeesData}/>
     </div>
   );
 }
